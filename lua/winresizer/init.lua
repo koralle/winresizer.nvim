@@ -149,7 +149,7 @@ end
 
 local function get_mode_message(mode)
   if mode == 'resize' then
-    return 'hjkl: resize, f: focus, e: mode, Enter: apply, q: cancel'
+    return 'hjkl: resize, f: focus, m: move, e: mode, Enter: apply, q: cancel'
   elseif mode == 'move' then
     return 'hjkl: move, e: mode, Enter: apply, q: cancel'
   elseif mode == 'focus' then
@@ -212,7 +212,7 @@ local function start_winresizer_mode(mode)
       elseif key_char == config.keycode_focus and mode == 'resize' then
         mode = 'focus'
         update_display()
-      elseif key_char == config.keycode_move and mode == 'focus' then
+      elseif key_char == config.keycode_move and (mode == 'resize' or mode == 'focus') then
         mode = 'move'
         update_display()
       else

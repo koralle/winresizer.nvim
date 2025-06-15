@@ -9,6 +9,7 @@ local defaults = {
   keycode_down = 106,
   keycode_up = 107,
   keycode_right = 108,
+  keycode_mode = 101, -- 'e'
   resize_count = 3,
   start_key = '<C-E>',
   start_mode = 'resize',
@@ -144,6 +145,39 @@ local function execute_command(key_char, mode)
   end
 end
 
+local function get_mode_message(mode)
+  if mode == 'resize' then
+    return 'hjkl: resize, e: mode, Enter: apply, q: cancel'
+  elseif mode == 'move' then
+    return 'hjkl: move, e: mode, Enter: apply, q: cancel'
+  elseif mode == 'focus' then
+    return 'hjkl: focus, e: mode, Enter: apply, q: cancel'
+  end
+  return 'hjkl: action, e: mode, Enter: apply, q: cancel'
+end
+
+local function get_mode_title(mode)
+  if mode == 'resize' then
+    return '-- RESIZE --'
+  elseif mode == 'move' then
+    return '-- MOVE --'
+  elseif mode == 'focus' then
+    return '-- FOCUS --'
+  end
+  return '-- WINRESIZER --'
+end
+
+local function cycle_mode(current_mode)
+  if current_mode == 'resize' then
+    return 'move'
+  elseif current_mode == 'move' then
+    return 'focus'
+  elseif current_mode == 'focus' then
+    return 'resize'
+  end
+  return 'resize'
+end
+
 local function start_winresizer_mode(mode)
   mode = mode or config.start_mode
   
@@ -154,8 +188,12 @@ local function start_winresizer_mode(mode)
     vim.o.more = false
     vim.o.cmdheight = 2
     
-    vim.api.nvim_echo({{'-- WINRESIZER --', 'ModeMsg'}}, false, {})
-    vim.api.nvim_echo({{'hjkl: resize, Enter: apply, q: cancel', 'MoreMsg'}}, false, {})
+    local function update_display()
+      vim.api.nvim_echo({{get_mode_title(mode), 'ModeMsg'}}, false, {})
+      vim.api.nvim_echo({{get_mode_message(mode), 'MoreMsg'}}, false, {})
+    end
+    
+    update_display()
     
     while true do
       local key_char = get_char()
@@ -166,9 +204,13 @@ local function start_winresizer_mode(mode)
       elseif key_char == config.keycode_cancel then
         vim.api.nvim_echo({{'', ''}}, false, {})
         break
+      elseif key_char == config.keycode_mode then
+        mode = cycle_mode(mode)
+        update_display()
+      else
+        execute_command(key_char, mode)
       end
       
-      execute_command(key_char, mode)
       vim.cmd('redraw')
     end
     

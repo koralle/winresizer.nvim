@@ -3,6 +3,9 @@
 A Neovim plugin for easy window resizing, moving, and focusing, written in pure Lua.  
 This is a Lua port of the original [winresizer](https://github.com/simeji/winresizer) Vim plugin.
 
+> [!NOTE]
+> This plugin is fully written by [Claude Code](https://docs.anthropic.com/ja/docs/claude-code/overview)
+
 ## Features
 
 - **Resize windows**: Easily resize split windows using hjkl keys

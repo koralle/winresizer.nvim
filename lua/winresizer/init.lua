@@ -10,6 +10,8 @@ local defaults = {
   keycode_up = 107,
   keycode_right = 108,
   keycode_mode = 101, -- 'e'
+  keycode_focus = 102, -- 'f'
+  keycode_move = 109, -- 'm'
   resize_count = 3,
   start_key = '<C-E>',
   start_mode = 'resize',
@@ -147,11 +149,11 @@ end
 
 local function get_mode_message(mode)
   if mode == 'resize' then
-    return 'hjkl: resize, e: mode, Enter: apply, q: cancel'
+    return 'hjkl: resize, f: focus, e: mode, Enter: apply, q: cancel'
   elseif mode == 'move' then
     return 'hjkl: move, e: mode, Enter: apply, q: cancel'
   elseif mode == 'focus' then
-    return 'hjkl: focus, e: mode, Enter: apply, q: cancel'
+    return 'hjkl: focus, m: move, e: mode, Enter: apply, q: cancel'
   end
   return 'hjkl: action, e: mode, Enter: apply, q: cancel'
 end
@@ -206,6 +208,12 @@ local function start_winresizer_mode(mode)
         break
       elseif key_char == config.keycode_mode then
         mode = cycle_mode(mode)
+        update_display()
+      elseif key_char == config.keycode_focus and mode == 'resize' then
+        mode = 'focus'
+        update_display()
+      elseif key_char == config.keycode_move and mode == 'focus' then
+        mode = 'move'
         update_display()
       else
         execute_command(key_char, mode)
